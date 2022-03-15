@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for i in {0..24}
+do
+    sed -i -r "4 s/$i/$((i+1))/1" $1
+    python run.py $1
+done
+sed -i -r "4 s/$((i+1))/0/1" $1

@@ -1,0 +1,27 @@
+---
+  default:
+    plot_path: '/Users/nrprzybyl/ML/MAFAULDA/window/plots/'
+    experiment_name: '20_random_4'
+
+  sweep:
+    random_pick: True
+    n_files: 4
+    file_idxs:
+      - 1396
+      - 502
+      - 1418
+      - 990
+        #- 1420
+        #- 1823
+        #- 1408
+        #- 1296
+        #- 1402
+        #- 144
+    width_per_step:
+      lo: 10000
+      hi: 10000
+      step: 500
+    window_width:
+      lo: 1000
+      hi: 50000
+      step: 2000

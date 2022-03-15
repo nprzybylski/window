@@ -1,0 +1,22 @@
+default:
+  experiment_name: all_normals
+  plot_path: /Users/nrprzybyl/ML/MAFAULDA/window/plots/
+sweep:
+  file_idxs:
+  - 1396
+  - 1418
+  - 1420
+  - 1408
+  - 1402
+  - 1395
+  - 1399
+  n_files: 10
+  random_pick: false
+  width_per_step:
+    hi: 10000
+    lo: 10000
+    step: 500
+  window_width:
+    hi: 50000
+    lo: 1000
+    step: 5000

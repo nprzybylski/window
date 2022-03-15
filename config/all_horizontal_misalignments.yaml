@@ -1,0 +1,32 @@
+default:
+  experiment_name: all_horizontal_misalignments
+  plot_path: /Users/nrprzybyl/ML/MAFAULDA/window/plots/
+sweep:
+  file_idxs:
+  - 1296
+  - 1381
+  - 1226
+  - 1363
+  - 1255
+  - 1245
+  - 1247
+  - 1270
+  - 1373
+  - 1375
+  - 1241
+  - 1330
+  - 1331
+  - 1386
+  - 1224
+  - 1344
+  - 1257
+  n_files: 10
+  random_pick: false
+  width_per_step:
+    hi: 10000
+    lo: 10000
+    step: 500
+  window_width:
+    hi: 50000
+    lo: 1000
+    step: 5000

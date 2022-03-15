@@ -1,0 +1,48 @@
+default:
+  experiment_name: all_imbalance
+  plot_path: /Users/nrprzybyl/ML/MAFAULDA/window/plots/
+sweep:
+  file_idxs:
+  - 990
+  - 1075
+  - 982
+  - 881
+  - 910
+  - 945
+  - 953
+  - 869
+  - 1080
+  - 867
+  - 866
+  - 1028
+  - 1033
+  - 1125
+  - 927
+  - 998
+  - 973
+  - 1045
+  - 1006
+  - 1046
+  - 862
+  - 1093
+  - 941
+  - 1086
+  - 1099
+  - 923
+  - 899
+  - 947
+  - 864
+  - 980
+  - 1177
+  - 1162
+  - 889
+  n_files: 10
+  random_pick: false
+  width_per_step:
+    hi: 10000
+    lo: 10000
+    step: 500
+  window_width:
+    hi: 50000
+    lo: 1000
+    step: 5000
