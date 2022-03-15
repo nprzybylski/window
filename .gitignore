@@ -1,0 +1,5 @@
+plots/
+test/
+utils/__pycache__/
+plot test.ipynb
+.DS_Store
