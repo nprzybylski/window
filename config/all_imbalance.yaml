@@ -1,6 +1,6 @@
 default:
   experiment_name: all_imbalance
-  plot_path: /Users/nrprzybyl/ML/MAFAULDA/window/plots/
+  plot_path: /home/nprzybylski/window/plots/
 sweep:
   file_idxs:
   - 990
@@ -43,6 +43,6 @@ sweep:
     lo: 10000
     step: 500
   window_width:
-    hi: 50000
-    lo: 1000
+    hi: 250000
+    lo: 51000
     step: 5000
