@@ -1,5 +1,5 @@
 default:
-  experiment_name: all_underhangs
+  experiment_name: all_underhangs_250000
   plot_path: /ac-project/nprzybylski/window/plots/
 sweep:
   file_idxs:
