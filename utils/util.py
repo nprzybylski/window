@@ -555,10 +555,10 @@ def plot_window( df=None, n=2, back_colors=['r','b'],
 #         ax.legend()
     fig.suptitle(f'{window_width} window width and {width_per_step} width per step')
 
-def prepare_window_data( data_path='~/ML/MAFAULDA/data/', steps_per_file=250000, num_files=2,
+def prepare_window_data( data_path='/usrc-nfs/nprzybylski/MAFAULDA/data/', steps_per_file=250000, num_files=2,
                          sensors=None, file_idxs=None ):
     df = pd.DataFrame(columns=sensors)
-    val_files = pd.read_csv('/Users/nrprzybyl/ML/MAFAULDA/window/utils/val_files.csv').set_index('Unnamed: 0')
+    val_files = pd.read_csv('/home/nprzybylski/window/utils/val_files.csv').set_index('Unnamed: 0')
     if file_idxs is None:
         for i in range(num_files):
             p = data_path+val_files['path'].iloc[i]
@@ -633,7 +633,7 @@ def sweep_window(config='/Users/nrprzybyl/ML/MAFAULDA/window/config/config.yaml'
         except yaml.YAMLError as exc:
             print(exc)
 
-    with open('/Users/nrprzybyl/ML/MAFAULDA/window/utils/utils.json', 'r') as file:
+    with open('/home/nprzybylski/window/utils/utils.json', 'r') as file:
         utils = json.load(file)
 
     # load the model
