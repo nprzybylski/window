@@ -1,5 +1,3 @@
-#!/Users/nrprzybyl/env/bin/python
-
 from utils.util import *
 import sys
 
