@@ -1,6 +1,7 @@
 from utils.util import *
 import sys
 
-path = sys.argv[1]
-print(path)
-sweep_window( config = path )
+wpath = sys.argv[1]
+config = sys.argv[2]
+print(wpath)
+outer_sweep_window( wpath = wpath, config = config )

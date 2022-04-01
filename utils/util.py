@@ -555,10 +555,17 @@ def plot_window( df=None, n=2, back_colors=['r','b'],
 #         ax.legend()
     fig.suptitle(f'{window_width} window width and {width_per_step} width per step')
 
+<<<<<<< HEAD
 def prepare_window_data( data_path='/ac-project/nprzybylski/MAFAULDA/data/', steps_per_file=250000, num_files=2,
                          sensors=None, file_idxs=None ):
     df = pd.DataFrame(columns=sensors)
     val_files = pd.read_csv('/ac-project/nprzybylski/window/utils/test_files.csv').set_index('Unnamed: 0')
+=======
+def prepare_window_data( data_path='/Users/nrprzybyl/ML/MAFAULDA/data/', steps_per_file=250000, num_files=2,
+                         sensors=None, file_idxs=None ):
+    df = pd.DataFrame(columns=sensors)
+    val_files = pd.read_csv('/Users/nrprzybyl/ML/MAFAULDA/window/utils/test_files.csv').set_index('Unnamed: 0')
+>>>>>>> 42bc82985a112c5e0e06f326ee6e81352c8450f5
     if file_idxs is None:
         for i in range(num_files):
             p = data_path+val_files['path'].iloc[i]
@@ -753,4 +760,119 @@ def sweep_window(config='/Users/nrprzybyl/ML/MAFAULDA/window/config/config.yaml'
     t = time.time() - t
     meta[run]['time'] = t
     with open(f'{path}/out', 'w') as file:
+        file.write(json.dumps(meta))
+
+def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window/',config='config/config.yaml'):
+    t = time.time()
+    with open(f'{wpath}{config}','r') as stream:
+        try:
+            conf = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    with open(f'{wpath}utils/utils1.json', 'r') as file:
+        utils = json.load(file)
+
+    # load the model
+    model = joblib.load(f'{wpath}models/rfc1.joblib')
+
+    idxs = utils['idxs']
+    S = utils['signals']
+    columns = utils['columns']
+    classDict = utils['classes']
+
+    default = conf['default']
+    plot_path = default['plot_path']
+    experiment_name = default['experiment_name']
+    path = os.path.join(plot_path,experiment_name)
+    isDir = os.path.isdir(path)
+    if not isDir:
+        os.mkdir(path)
+
+    sweep = conf['sweep']
+    random_pick = sweep['random_pick']
+    if not random_pick:
+        file_idxs = sweep['file_idxs']
+        n_files = len(file_idxs)
+    else:
+        n_files = sweep['n_files']
+        file_idxs = [*np.random.choice([*idxs],n_files,replace=False)]
+    width_per_step = sweep['width_per_step']
+    window_width = sweep['window_width']
+    wps = np.arange(width_per_step['lo'],width_per_step['hi']+width_per_step['step'],width_per_step['step'])
+    ww = np.arange(window_width['lo'],window_width['hi']+window_width['step'],window_width['step'])
+    params = [*itertools.product(wps,ww)]
+    n_iters = len(params)
+
+    for i,p in enumerate(params):
+        os.system(inner_sweep_window(i,p,S,file_idxs,model,columns,n_files,classDict,n_iters,sweep,path))
+
+def inner_sweep_window(i,p,S,file_idxs,model,columns,n_files,classDict,n_iters,sweep,path):
+
+    df = prepare_window_data(sensors=S, file_idxs=file_idxs)
+
+    _width_per_step = p[0]
+    _window_width = p[1]
+
+    if i % 1 == 0:
+        clear_output(wait=True)
+        print(f'{i+1}/{n_iters} -- {round(100*((i+1)/(n_iters)),2)}%')
+
+    _t = time.time()
+    trues, preds = slide_window(window_model=model, df=df, columns=columns,
+                                num_files=n_files, width_per_step=_width_per_step,
+                                window_width=_window_width,classDict=classDict)
+    _t = time.time() - _t
+
+    overall_acc = accuracy_score(trues,preds)
+
+    t_zones = [ [] for _ in np.ones(n_files) ]
+    p_zones = [ [] for _ in np.ones(n_files) ]
+
+    zone_idxs = [ int((i*_width_per_step) // 250000) for i in range(len(trues)) ]
+
+    for i,z in enumerate(zone_idxs):
+        p_zones[z].append(preds[i])
+        t_zones[z].append(trues[i])
+
+    zones = []
+
+    fig, acc = plot_window(df,trues=trues,preds=preds,class_dict=classDict, n=n_files, width_per_step=_width_per_step, window_width=_window_width)
+    fig_name = ''
+    if sweep['random_pick'] is True:
+        for _ in file_idxs:
+            fig_name+=f'{_}_'
+    else:
+        s1,s2 = '',''
+        for i in range(5):
+            s1+=f'{file_idxs[i]}_'
+            s2 = f'{file_idxs[-i-1]}_'+s2
+        fig_name = f'{s1[:-1]}\...{s2[:-1]}'    # 0_1_2_3_4..._n-5,n-4,n-3,n-2,n-1
+    p = os.path.join(path,f'{_window_width}_{_width_per_step}')
+    isDir = os.path.isdir(p)
+    if not isDir:
+        os.mkdir(p)
+    run = f'{_window_width}_{_width_per_step}'
+    fig_path = f'{path}/{run}/{fig_name[:-1]}.png'
+    fig.savefig(fig_path)
+    plt.close()
+
+    fig1 = confusion_hist_plot(df=df,y_test=trues,preds=preds,codes=classDict)
+    fig1.savefig(f'{fig_path} confusion.png')
+    plt.close()
+
+    meta = {}
+    meta[run] = {}
+    meta[run]['overall_acc'] = overall_acc
+    meta[run]['acc'] = acc
+    meta[run]['time'] = _t
+    meta[run]['zones'] = {}
+    meta[run]['zones'] = [ {} for _ in np.ones(n_files) ]
+    file_paths = [*df['path'].unique()]
+    meta[run]['file_paths'] = file_paths
+
+    for i in range(n_files):
+        meta[run]['zones'][i]['acc'] = accuracy_score(t_zones[i],p_zones[i])
+
+    with open(f'{path}/{run}/out', 'w') as file:
         file.write(json.dumps(meta))
