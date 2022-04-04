@@ -74,6 +74,9 @@ done
 wps_len=${#wps[@]}
 ww_len=${#ww[@]}
 
+util=$wpath/$util
+config=$wpath/$config
+
 param=()
 n_iters=$((wps_len*ww_len))
 r=0
@@ -88,7 +91,7 @@ do
         # not really needed, can just run python script from here
         # param=(${wps[$i]} ${ww[$j]})
 
-        sbatch python test.py $r $param $file_idxs $model $columns $n_files $classDict $n_iters $sweep $path
+        python test.py $r $param [${file_idxs[@]}] $model [${columns[@]}] $n_files $util $n_iters $config $path
         # echo $r
 
         r=$((r+1))

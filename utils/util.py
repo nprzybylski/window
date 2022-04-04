@@ -755,19 +755,19 @@ def sweep_window(config='/Users/nrprzybyl/ML/MAFAULDA/window/config/config.yaml'
     with open(f'{path}/out', 'w') as file:
         file.write(json.dumps(meta))
 
-def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window/',config='config/config.yaml'):
+def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window',config='config/config.yaml',util='utils/utils1.json',model='models/rfc1.joblib'):
     t = time.time()
-    with open(f'{wpath}{config}','r') as stream:
+    with open(f'{wpath}/{config}','r') as stream:
         try:
             conf = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
 
-    with open(f'{wpath}utils/utils1.json', 'r') as file:
+    with open(f'{wpath}/{util}', 'r') as file:
         utils = json.load(file)
 
     # load the model
-    model = joblib.load(f'{wpath}models/rfc1.joblib')
+    # model = joblib.load(f'{wpath}/{model}')
 
     idxs = utils['idxs']
     S = utils['signals']
@@ -790,6 +790,15 @@ def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window/',config='conf
     else:
         n_files = sweep['n_files']
         file_idxs = [*np.random.choice([*idxs],n_files,replace=False)]
+
+    file_data = {}
+    file_data['file_idxs'] = [int(i) for i in file_idxs]
+    file_data['n_files'] = n_files
+    fpath = f'{path}/file_data'
+
+    with open(f'{fpath}', 'w') as file:
+        file.write(json.dumps(file_data))
+
     width_per_step = sweep['width_per_step']
     window_width = sweep['window_width']
     wps = np.arange(width_per_step['lo'],width_per_step['hi']+width_per_step['step'],width_per_step['step'])
@@ -797,10 +806,35 @@ def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window/',config='conf
     params = [*itertools.product(wps,ww)]
     n_iters = len(params)
 
-    for i,p in enumerate(params):
-        os.system(inner_sweep_window(i,p,S,file_idxs,model,columns,n_files,classDict,n_iters,sweep,path))
+    return params,model,config,util,wpath,path,fpath,n_iters
 
-def inner_sweep_window(i,p,S,file_idxs,model,columns,n_files,classDict,n_iters,sweep,path):
+    # for i,p in enumerate(params):
+    #     os.system()
+    #     os.system(f'inner_sweep_window(i,p,S,file_idxs,model,columns,n_files,classDict,n_iters,sweep,path)')
+
+def inner_sweep_window(i,p,model,config,util,wpath,path,fpath,n_iters):
+
+    with open(f'{wpath}/{config}','r') as stream:
+        try:
+            conf = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    with open(f'{wpath}/{util}', 'r') as file:
+        utils = json.load(file)
+
+    columns = utils['columns']
+    classDict = utils['classes']
+    S = utils['signals']
+
+    # load the model
+    model = joblib.load(f'{wpath}/{model}')
+
+    with open(f'{fpath}','r') as file:
+        file_data = json.load(file)
+
+    file_idxs = file_data['file_idxs']
+    n_files = file_data['n_files']
 
     df = prepare_window_data(sensors=S, file_idxs=file_idxs)
 
@@ -832,7 +866,7 @@ def inner_sweep_window(i,p,S,file_idxs,model,columns,n_files,classDict,n_iters,s
 
     fig, acc = plot_window(df,trues=trues,preds=preds,class_dict=classDict, n=n_files, width_per_step=_width_per_step, window_width=_window_width)
     fig_name = ''
-    if sweep['random_pick'] is True:
+    if conf['sweep']['random_pick'] is True:
         for _ in file_idxs:
             fig_name+=f'{_}_'
     else:
