@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source ~/env/bin/activate
-yq=~/Downloads/yq_darwin_amd64
+source /ac-project/nprzybylski/window/window-env/bin/activate
+yq=/ac-project/nprzybylski/yq_linux_386
 
 idxs=($($yq .idxs[] $wpath/$util))
 S=($($yq .signals[] $wpath/$util))
@@ -88,8 +88,9 @@ do
         # not really needed, can just run python script from here
         # param=(${wps[$i]} ${ww[$j]})
 
-        sbatch python test.py $r $param $file_idxs $model $columns $n_files $classDict $n_iters $sweep $path
-        # echo $r
+        #sbatch --export=r=$r,param=$param,file_idxs=$file_idxs,model=$model,columns=$columns,n_files=$n_files,classDict=$classDict,n_iters=$n_iters,sweep=$sweep,path=$path s.slurm 
+        sbatch --export=r=$r,param=$param,model=$model,path=$path,file_idxs=$file_idxs,columns=$columns,n_files=$n_files,n_iters=$n_iters,sweep=$sweep s.slurm
+	# echo $r
 
         r=$((r+1))
 

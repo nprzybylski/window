@@ -1,6 +1,6 @@
 ---
   default:
-    plot_path: '/Users/nrprzybyl/ML/MAFAULDA/window/plots/'
+    plot_path: '/ac-project/nprzybylski/window/plots/'
     experiment_name: 'new_function_test'
 
   sweep:
