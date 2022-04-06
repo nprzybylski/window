@@ -1,0 +1,22 @@
+default:
+  experiment_name: all_normals_test
+  plot_path: /ac-project/nprzybylski/window/plots/
+sweep:
+  file_idxs:
+  - 1420
+  - 1402
+  - 1396
+  - 1399
+  - 1398
+  - 1429
+  - 1416
+  n_files: 10
+  random_pick: false
+  width_per_step:
+    hi: 2500
+    lo: 2500
+    step: 500
+  window_width:
+    hi: 250000
+    lo: 200000
+    step: 5000
