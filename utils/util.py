@@ -560,11 +560,6 @@ def prepare_window_data( data_path='/ac-project/nprzybylski/MAFAULDA/data/', ste
     df = pd.DataFrame(columns=sensors)
     val_files = pd.read_csv('/ac-project/nprzybylski/window/utils/test_files.csv').set_index('Unnamed: 0')
 
-def prepare_window_data( data_path='/Users/nrprzybyl/ML/MAFAULDA/data/', steps_per_file=250000, num_files=2,
-                         sensors=None, file_idxs=None ):
-    df = pd.DataFrame(columns=sensors)
-    val_files = pd.read_csv('/Users/nrprzybyl/ML/MAFAULDA/window/utils/test_files.csv').set_index('Unnamed: 0')
-
     if file_idxs is None:
         for i in range(num_files):
             p = data_path+val_files['path'].iloc[i]
@@ -781,7 +776,7 @@ def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window',config='confi
     classDict = utils['classes']
 
     default = conf['default']
-    plot_path = default['plot_path']
+    plot_path = f'{wpath}/plots/' #default['plot_path']
     experiment_name = default['experiment_name']
     path = os.path.join(plot_path,experiment_name)
     isDir = os.path.isdir(path)
