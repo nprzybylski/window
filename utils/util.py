@@ -556,10 +556,9 @@ def plot_window( df=None, n=2, back_colors=['r','b'],
     fig.suptitle(f'{window_width} window width and {width_per_step} width per step')
 
 def prepare_window_data( data_path='/ac-project/nprzybylski/MAFAULDA/data/', steps_per_file=250000, num_files=2,
-                         sensors=None, file_idxs=None ):
+                         sensors=None, file_idxs=None, dpath='../MAFAULDA/data' ):
     df = pd.DataFrame(columns=sensors)
     wpath = os.environ.get('wpath')
-    dpath = os.environ.get('dpath')
     data_path = f'{wpath}/{dpath}'
     # val_files = pd.read_csv('/ac-project/nprzybylski/window/utils/test_files.csv').set_index('Unnamed: 0')
     val_files = pd.read_csv(f'{wpath}/utils/test_files.csv').set_index('Unnamed: 0')
@@ -817,7 +816,7 @@ def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window',config='confi
     #     os.system()
     #     os.system(f'inner_sweep_window(i,p,S,file_idxs,model,columns,n_files,classDict,n_iters,sweep,path)')
 
-def inner_sweep_window(i,p,model,config,util,wpath,path,fpath,n_iters):
+def inner_sweep_window(i,p,model,config,util,wpath,path,fpath,n_iters,dpath):
 
     with open(f'{wpath}/{config}','r') as stream:
         try:
@@ -841,7 +840,7 @@ def inner_sweep_window(i,p,model,config,util,wpath,path,fpath,n_iters):
     file_idxs = file_data['file_idxs']
     n_files = file_data['n_files']
 
-    df = prepare_window_data(sensors=S, file_idxs=file_idxs)
+    df = prepare_window_data(dpath=dpath, sensors=S, file_idxs=file_idxs)
 
     _width_per_step = p[0]
     _window_width = p[1]

@@ -1,7 +1,7 @@
 ---
   default:
     plot_path: '/ac-project/nprzybylski/window/plots/'
-    experiment_name: 'test_new_workflow'
+    experiment_name: 'test_new_workflow1'
 
   sweep:
     random_pick: True

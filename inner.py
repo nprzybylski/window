@@ -11,11 +11,12 @@ wpath = sys.argv[7]
 path = sys.argv[8]
 fpath = sys.argv[9]
 n_iters = int(sys.argv[10])
-
+dpath = sys.argv[11]
+ 
 p = [p0,p1]
 
 #print(i)
 #print(p)
 #print(n_iters)
 
-inner_sweep_window(i,p,model,config,util,wpath,path,fpath,n_iters)
+inner_sweep_window(i,p,model,config,util,wpath,path,fpath,n_iters,dpath)
