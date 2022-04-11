@@ -30,3 +30,10 @@ Usage for several config files:
 
 Modify script.sh to include the config files you want and then run
 $ ./script.sh
+
+
+After completing the above steps, you can try testing the workflow by running the following:
+
+$ python run.py $wpath $config
+
+There should be 250 jobs running in the queue if everything went right

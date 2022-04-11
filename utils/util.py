@@ -559,7 +559,8 @@ def prepare_window_data( data_path='/ac-project/nprzybylski/MAFAULDA/data/', ste
                          sensors=None, file_idxs=None ):
     df = pd.DataFrame(columns=sensors)
     wpath = os.environ.get('wpath')
-    data_path = os.environ.get('dpath')
+    dpath = os.environ.get('dpath')
+    data_path = f'{wpath}/{dpath}'
     # val_files = pd.read_csv('/ac-project/nprzybylski/window/utils/test_files.csv').set_index('Unnamed: 0')
     val_files = pd.read_csv(f'{wpath}/utils/test_files.csv').set_index('Unnamed: 0')
 
