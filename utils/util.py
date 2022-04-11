@@ -558,7 +558,10 @@ def plot_window( df=None, n=2, back_colors=['r','b'],
 def prepare_window_data( data_path='/ac-project/nprzybylski/MAFAULDA/data/', steps_per_file=250000, num_files=2,
                          sensors=None, file_idxs=None ):
     df = pd.DataFrame(columns=sensors)
-    val_files = pd.read_csv('/ac-project/nprzybylski/window/utils/test_files.csv').set_index('Unnamed: 0')
+    wpath = os.environ.get('wpath')
+    data_path = os.environ.get('dpath')
+    # val_files = pd.read_csv('/ac-project/nprzybylski/window/utils/test_files.csv').set_index('Unnamed: 0')
+    val_files = pd.read_csv(f'{wpath}/utils/test_files.csv').set_index('Unnamed: 0')
 
     if file_idxs is None:
         for i in range(num_files):
