@@ -8,6 +8,6 @@
 #SBATCH --export=ALL
 #SBATCH -t 96:00:00
 
-source /ac-project/nprzybylski/window/window-env/bin/activate
+source $wpath/window-env/bin/activate
 
 python run.py $wpath $config
