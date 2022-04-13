@@ -7,6 +7,7 @@ $ export wpath=$PWD
 $ export util=utils/utils1.json
 $ export dpath=/path/to/MAFAULDA/data/
 $ export vpath=utils/test_files.csv
+$ export model=models/rfc1.joblib
 
 
 How to set up python virtual environment:
