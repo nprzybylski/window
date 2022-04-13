@@ -6,6 +6,7 @@ Set up environment variables (from window directory):
 $ export wpath=$PWD
 $ export util=utils/utils1.json
 $ export dpath=/path/to/MAFAULDA/data/
+$ export vpath=utils/test_files.csv
 
 
 How to set up python virtual environment:
