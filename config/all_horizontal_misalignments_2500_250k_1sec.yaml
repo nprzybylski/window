@@ -178,5 +178,5 @@ sweep:
     step: 500
   window_width:
     hi: 250000
-    lo: 250000
+    lo: 5000
     step: 5000
