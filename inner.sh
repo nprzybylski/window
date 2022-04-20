@@ -9,6 +9,6 @@
 #SBATCH -t 96:00:00
 
 #echo "model: $model"
-source window-env/bin/activate
+source $wpath/window-env/bin/activate
 
 python inner.py $i $p0 $p1 $model $config $util $wpath $path $fpath $n_iters $dpath
