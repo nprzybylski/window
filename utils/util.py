@@ -378,22 +378,31 @@ def confusion_hist_plot(df=None,y_test=None,preds=None,codes=None):
 
     fig, ((ax1),(ax2)) = plt.subplots(1,2,figsize=(20,8),sharey=False)
 
+    # get the values for the normalized confusion matrix
     cm = confusion_matrix(y_test,preds,normalize='true')
+    # get the values for the un-normalized confusion matrix
     _cm = confusion_matrix(y_test,preds,normalize=None)
+    # plot the normalized confusion matrix, but use the labels of the un-normalized confusion matrix.
+    # this allows us to normalize the color scale, but keep the original values
     sns.heatmap(cm, annot=_cm, cmap='Blues',ax=ax1)
 
+    # We need to correctly label the axes with whatever classes/faults were in our sample
+    # create a list that contains both the predicted and true values
     v = [*y_test.values]
     v.extend([*preds])
+    # convert to a set so only unique values are saved
     v = [*set(v)]
+    # convert integer values to string representations (suppose 1 actually means overhang, make that conversion)
     v = pd.Series(v).map(dict(map(reversed,codes.items())))
     keys_to_extract = v.values
     codes = {key: codes[key] for key in keys_to_extract}
 
+    # set axis labels to these new string representations
     ax1.set_xticklabels(codes.keys(),rotation=45)
     ax1.set_yticklabels(codes.keys(),rotation=0)
 
+    # for the histogram, order the data in such a way so it appears the same every time
     histData = pd.DataFrame(data=y_test,columns=[target])
-
     keyDf=histData[target].map(dict(map(reversed,codes.items())))
     orderedDf = pd.Categorical(keyDf,categories=[*codes.keys()],ordered=True)
     sns.histplot(y=orderedDf,ax=ax2,color='cornflowerblue',linewidth=1.75)
@@ -479,6 +488,7 @@ def summarize(df=None,columns=None):
     #print(tempDf.head())
     return tempDf.reset_index().drop(columns=['index'])
 
+# used to make plots that shows all signals & predictions with alternating zone colors (red, blue)
 def plot_window( df=None, n=2, back_colors=['r','b'],
                  trues=None, preds=None,
                  fig_size=(14,26), p_color='C0', t_color='C1',
@@ -488,15 +498,11 @@ def plot_window( df=None, n=2, back_colors=['r','b'],
     data_reindexed = df.reset_index().drop(columns=['index'])
     l = len(data_reindexed)/n
     sigs = data_reindexed.columns[:-2]
+    # define how many stacked plots we want. Account for each signal, plus one for predictions at bottom
     n_plots = len(sigs)+1
 
     fig = plt.figure()
-
-    # to change size of subplot's
-    # set height of each subplot as 8
     fig.set_figheight(16)
-
-    # set width of each subplot as 8
     fig.set_figwidth(14)
 
     # create grid for different subplots
@@ -505,28 +511,41 @@ def plot_window( df=None, n=2, back_colors=['r','b'],
                              hspace=0.5, height_ratios= [*np.ones(n_plots-1)]+[2])
 
     for i in range(n_plots):
+
+        # create tickmarks at 0,50000,100000,150000,200000,250000
         tick = len(data_reindexed)/5
         xticks = np.arange(0,len(data_reindexed)+tick,tick)
         ax = fig.add_subplot(spec[i])
+
+        # when i < n_plots-1, i corresponds to a signal
         if i < n_plots-1:
+            # plot the signal
             ax.plot(data_reindexed[sigs[i]],label=sigs[i])
+            # overlay the different colored zones
             for _ in range(n):
                 ax.axvspan(l*_, (l*_)+l, facecolor=back_colors[_%2], alpha=0.13)
+            # creates a yellow zone that denotes window width
             ax.axvspan(50000,50000+window_width,facecolor='y',alpha=.35)
             ax.set_xticks(xticks)
             ax.set_xticklabels(['']*len(xticks))
+
+        # when i >= n_plots-1, i corresponds to predictions
         else:
 #             ax.scatter(np.arange(window_width,(l*n)+width_per_step,width_per_step),preds,
 #                        label='predicted class',facecolors='none',edgecolors=p_color,alpha=p_alpha)
 #             ax.scatter(np.arange(window_width,(l*n)+width_per_step,width_per_step),trues,
 #                        label='true class',facecolors='none',edgecolors=t_color,alpha=t_alpha)
+
+            # plot predictions
             ax.scatter(np.arange(window_width,(l*n),width_per_step),preds,
                        label='predicted class',facecolors='none',edgecolors=p_color,alpha=p_alpha)
+            # plot true values
             ax.scatter(np.arange(window_width,(l*n),width_per_step),trues,
                        label='true class',facecolors='none',edgecolors=t_color,alpha=t_alpha)
             ax.set_yticks([*class_dict.values()])
             ax.set_yticklabels([*class_dict.keys()])
             ax.set_xticks(xticks)
+            # overlay the different colored zones
             for _ in range(n):
                 ax.axvspan(l*_, (l*_)+l, facecolor=back_colors[_%2], alpha=0.13)
         ax.legend()
