@@ -581,6 +581,7 @@ def prepare_window_data( data_path='/ac-project/nprzybylski/MAFAULDA/data/', ste
     vpath = os.environ.get('vpath')
     data_path = f'{wpath}/{dpath}'
     # val_files = pd.read_csv('/ac-project/nprzybylski/window/utils/test_files.csv').set_index('Unnamed: 0')
+    print(f'DEBUG: {wpath}/{vpath}')
     val_files = pd.read_csv(f'{wpath}/{vpath}').set_index('Unnamed: 0')
 
     if file_idxs is None:
@@ -779,7 +780,7 @@ def sweep_window(config='/Users/nrprzybyl/ML/MAFAULDA/window/config/config.yaml'
     with open(f'{path}/out', 'w') as file:
         file.write(json.dumps(meta))
 
-def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window',config='config/config.yaml',util='utils/utils1.json',model='models/rfc1.joblib'):
+def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window',config='config/config.yaml',util='utils/utils1.json',model='models/rfc1.joblib',vpath='utils/test_files_1sec.csv',run=None):
     t = time.time()
     with open(f'{wpath}/{config}','r') as stream:
         try:
@@ -793,7 +794,8 @@ def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window',config='confi
     # load the model
     # model = joblib.load(f'{wpath}/{model}')
 
-    idxs = utils['idxs']
+    #idxs = utils['idxs']
+    idxs = [*pd.read_csv(f'{wpath}/{vpath}').set_index('Unnamed: 0').index]
     S = utils['signals']
     columns = utils['columns']
     classDict = utils['classes']
@@ -801,6 +803,8 @@ def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window',config='confi
     default = conf['default']
     plot_path = f'{wpath}/plots/' #default['plot_path']
     experiment_name = default['experiment_name']
+    if run is not None:
+        experiment_name += f'_{run}'
     path = os.path.join(plot_path,experiment_name)
     isDir = os.path.isdir(path)
     if not isDir:
@@ -812,7 +816,7 @@ def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window',config='confi
         file_idxs = sweep['file_idxs']
         n_files = len(file_idxs)
     else:
-        n_files = sweep['n_files']
+        n_files = sweep['n_files'] 
         file_idxs = [*np.random.choice([*idxs],n_files,replace=False)]
 
     file_data = {}

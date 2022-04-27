@@ -6,13 +6,17 @@ import os
 
 wpath = sys.argv[1]
 config = sys.argv[2]
+
 dpath = os.environ.get('dpath')
 model = os.environ.get('model')
 vpath = os.environ.get('vpath')
 
 #print(wpath)
-params,model,config,util,wpath,path,fpath,n_iters = outer_sweep_window( wpath = wpath, config = config, model = model )
-
+if len(sys.argv) > 3:
+    run = sys.argv[3]
+    params,model,config,util,wpath,path,fpath,n_iters = outer_sweep_window( wpath = wpath, config = config, model = model, run = run, vpath = vpath )
+else:
+    params,model,config,util,wpath,path,fpath,n_iters = outer_sweep_window( wpath = wpath, config = config, model = model, vpath = vpath )
 #print(wpath, config, dpath, model, vpath)
 
 for i,p in enumerate(params):

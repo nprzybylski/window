@@ -11,4 +11,4 @@
 #echo "model: $model"
 source $wpath/window-env/bin/activate
 
-python inner.py $i $p0 $p1 $model $config $util $wpath $path $fpath $n_iters $dpath
+python inner.py $i $p0 $p1 $model $config $util $wpath $path $fpath $n_iters $dpath $run

@@ -10,4 +10,4 @@
 
 source $wpath/window-env/bin/activate
 
-python run.py $wpath $config
+python run.py $wpath $config $run
