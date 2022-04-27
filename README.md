@@ -1,4 +1,4 @@
-This workflow is mainly designed to be run on the AC cluster, but changes can be made to run elsewhere.
+This workflow is mainly designed to be run using SLURM on the AC cluster, but changes can be made to run elsewhere.
 
 !!! VERY IMPORTANT !!!
 Set up environment variables (from window directory):
