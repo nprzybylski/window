@@ -1,0 +1,53 @@
+default:
+  experiment_name: all_horizontal_misalignments_2500_250k_5sec
+  plot_path: /ac-project/nprzybylski/window/plots/
+sweep:
+  file_idxs:
+  - 1221
+  - 1270
+  - 1370
+  - 1204
+  - 1381
+  - 1331
+  - 1224
+  - 1247
+  - 1251
+  - 1387
+  - 1330
+  - 1386
+  - 1257
+  - 1351
+  - 1363
+  - 1373
+  - 1285
+  - 1195
+  - 1343
+  - 1196
+  - 1264
+  - 1306
+  - 1378
+  - 1201
+  - 1344
+  - 1335
+  - 1288
+  - 1277
+  - 1241
+  - 1245
+  - 1226
+  - 1371
+  - 1296
+  - 1355
+  - 1322
+  - 1383
+  - 1255
+  - 1375
+  n_files: 4
+  random_pick: false
+  width_per_step:
+    hi: 2500
+    lo: 2500
+    step: 500
+  window_width:
+    hi: 250000
+    lo: 5000
+    step: 5000
