@@ -579,6 +579,7 @@ def prepare_window_data( data_path='/ac-project/nprzybylski/MAFAULDA/data/', ste
     df = pd.DataFrame(columns=sensors)
     wpath = os.environ.get('wpath')
     vpath = os.environ.get('vpath')
+    dpath = os.environ.get('dpath')
     data_path = f'{wpath}/{dpath}'
     # val_files = pd.read_csv('/ac-project/nprzybylski/window/utils/test_files.csv').set_index('Unnamed: 0')
     print(f'DEBUG: {wpath}/{vpath}')
@@ -650,7 +651,9 @@ def plot_feature_importance(model=None, X=None, figsize=None):
     plt.rc('axes', titlesize=16)
     return importance_frame
 
-def sweep_window(config='/Users/nrprzybyl/ML/MAFAULDA/window/config/config.yaml'):
+def sweep_window(config='./config/config.yaml',
+                 model='./models/rfc_1sec.joblib',
+                 util='./utils/utils_1sec.json'):
     t = time.time()
     with open(config,'r') as stream:
         try:
@@ -658,11 +661,11 @@ def sweep_window(config='/Users/nrprzybyl/ML/MAFAULDA/window/config/config.yaml'
         except yaml.YAMLError as exc:
             print(exc)
 
-    with open('/ac-project/nprzybylski/window/utils/utils1.json', 'r') as file:
+    with open(util, 'r') as file:
         utils = json.load(file)
 
     # load the model
-    model = joblib.load('./models/rfc1.joblib')
+    model = joblib.load(model)
 
     idxs = utils['idxs']
     S = utils['signals']
@@ -816,7 +819,7 @@ def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window',config='confi
         file_idxs = sweep['file_idxs']
         n_files = len(file_idxs)
     else:
-        n_files = sweep['n_files'] 
+        n_files = sweep['n_files']
         file_idxs = [*np.random.choice([*idxs],n_files,replace=False)]
 
     file_data = {}
