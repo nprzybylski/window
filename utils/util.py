@@ -735,6 +735,7 @@ def sweep_window(config='./config/config.yaml',
     meta = {}
 
     for i,p in enumerate(params):
+        
         df = prepare_window_data(sensors=S, file_idxs=file_idxs)
 
         _width_per_step = p[0]
