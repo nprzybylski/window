@@ -5,7 +5,7 @@
 
   sweep:
     random_pick: True
-    n_files: 4
+    n_files: 6
     file_idxs:
       - 1396
       - 502

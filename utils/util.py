@@ -614,7 +614,7 @@ def slide_window( window_width=10000,width_per_step=10000,window_model=None,
 #     width_per_step = 2500
 #     window_model = model
 
-    preds, trues = [],[]
+    preds, trues, classes = [],[],[]
 #     for i in range(0,(steps_per_file*num_files)-window_width+width_per_step,width_per_step):
     for i in range(0,(steps_per_file*num_files)-window_width,width_per_step):
         data = df.iloc[i:i+window_width]
@@ -625,6 +625,7 @@ def slide_window( window_width=10000,width_per_step=10000,window_model=None,
         pred = window_model.predict(X)[0]
         preds.append(pred)
         trues.append(y)
+        classes.append(summarized['class'])
 
     # unique_values = []
     # unique_values.extend(preds)
@@ -632,7 +633,7 @@ def slide_window( window_width=10000,width_per_step=10000,window_model=None,
     # unique_values = [*set(unique_values)]
 
     trues = pd.Series(trues)
-    return trues, preds
+    return trues, preds, classes
 
 def plot_feature_importance(model=None, X=None, figsize=None):
     feature_names = X.columns
@@ -667,10 +668,19 @@ def sweep_window(config='./config/config.yaml',
     # load the model
     model = joblib.load(model)
 
-    idxs = utils['idxs']
+    wpath = os.environ.get('wpath')
+    vpath = os.environ.get('vpath')
+
+    df = pd.read_csv(f'{wpath}/{vpath}').set_index('Unnamed: 0')
+
+    idxs = [*df.index]
+
+    # idxs = utils['idxs']
     S = utils['signals']
     columns = utils['columns']
     classDict = utils['classes']
+    classes = [*classDict.keys()][:-1]
+
 
     default = conf['default']
     plot_path = default['plot_path']
@@ -686,8 +696,35 @@ def sweep_window(config='./config/config.yaml',
         file_idxs = sweep['file_idxs']
         n_files = len(file_idxs)
     else:
+        # n_files = sweep['n_files']
+        # file_idxs = [*np.random.choice([*idxs],n_files,replace=False)]
+
         n_files = sweep['n_files']
-        file_idxs = [*np.random.choice([*idxs],n_files,replace=False)]
+        # file_idxs = [*np.random.choice([*idxs],n_files,replace=False)]
+
+        # how many distinct classes there are, minus "mixed"
+        l = len(classes)
+
+        # how many full groups of 6 files will we have
+        n_groups = (n_files)//l
+        # how many members will the last group of files have
+        n_members = (n_files)%l
+
+        class_choices = []
+        for i in range(n_groups):
+            np.random.shuffle(classes)
+            class_choices.extend(classes)
+        np.random.shuffle(classes)
+        class_choices.extend(classes[:n_members])
+
+        fd = pd.DataFrame.copy(df)
+        file_idxs = []
+        for c in class_choices:
+            file_idx = np.random.choice(fd[fd['CLASS'] == c].index)
+            fd.drop(index=file_idx,inplace=True)
+            file_idxs.append(file_idx)
+        np.random.shuffle(file_idxs)
+
     width_per_step = sweep['width_per_step']
     window_width = sweep['window_width']
     wps = np.arange(width_per_step['lo'],width_per_step['hi']+width_per_step['step'],width_per_step['step'])
@@ -708,7 +745,7 @@ def sweep_window(config='./config/config.yaml',
             print(f'{i+1}/{n_iters} -- {round(100*((i+1)/(n_iters)),2)}%')
 
         _t = time.time()
-        trues, preds = slide_window(window_model=model, df=df, columns=columns,
+        trues, preds, window_classes = slide_window(window_model=model, df=df, columns=columns,
                                     num_files=n_files, width_per_step=_width_per_step,
                                     window_width=_window_width,classDict=classDict)
         _t = time.time() - _t
@@ -719,6 +756,7 @@ def sweep_window(config='./config/config.yaml',
 
         t_zones = [ [] for _ in np.ones(n_files) ]
         p_zones = [ [] for _ in np.ones(n_files) ]
+        c_zones = [ [] for _ in np.ones(n_files) ]
 
         zone_idxs = [ int((i*wps) // 250000) for i in range(len(trues)) ]
 
@@ -727,6 +765,7 @@ def sweep_window(config='./config/config.yaml',
 #             print(z)
             p_zones[z].append(preds[i])
             t_zones[z].append(trues[i])
+            c_zones[z].append(window_classes[i])
 
 #         print(t_zones)
 #         print(p_zones)
@@ -771,7 +810,10 @@ def sweep_window(config='./config/config.yaml',
         meta[run]['zones'] = {}
         meta[run]['zones'] = [ {} for _ in np.ones(n_files) ]
         for i in range(n_files):
-            meta[run]['zones'][i]['acc'] = accuracy_score(t_zones[i],p_zones[i])
+            meta[run]['zones'][i]['overall_acc'] = accuracy_score(t_zones[i],p_zones[i])
+            truth = [_ != 'mixed' for _ in c_zones[i]]
+            truth = [item for sublist in truth for item in sublist]
+            meta[run]['zones'][i]['acc'] = accuracy_score(pd.Series(t_zones[i])[truth],pd.Series(p_zones[i])[truth])
 
     file_paths = [*df['path'].unique()]
     meta[run]['file_paths'] = file_paths
@@ -798,10 +840,16 @@ def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window',config='confi
     # model = joblib.load(f'{wpath}/{model}')
 
     #idxs = utils['idxs']
-    idxs = [*pd.read_csv(f'{wpath}/{vpath}').set_index('Unnamed: 0').index]
+    #idxs = [*pd.read_csv(f'{wpath}/{vpath}').set_index('Unnamed: 0').index]
+
+    df = pd.read_csv(f'{wpath}/{vpath}').set_index('Unnamed: 0')
+
+    idxs = [*df.index]
+
     S = utils['signals']
     columns = utils['columns']
     classDict = utils['classes']
+    classes = [*classDict.keys()][:-1]
 
     default = conf['default']
     plot_path = f'{wpath}/plots/' #default['plot_path']
@@ -820,7 +868,32 @@ def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window',config='confi
         n_files = len(file_idxs)
     else:
         n_files = sweep['n_files']
-        file_idxs = [*np.random.choice([*idxs],n_files,replace=False)]
+        # file_idxs = [*np.random.choice([*idxs],n_files,replace=False)]
+
+        # how many distinct classes there are, minus "mixed"
+        l = len(classes)
+
+        # how many full groups of 6 files will we have
+        n_groups = (n_files)//l
+        # how many members will the last group of files have
+        n_members = (n_files)%l
+
+        class_choices = []
+        for i in range(n_groups):
+            np.random.shuffle(classes)
+            class_choices.extend(classes)
+        np.random.shuffle(classes)
+        class_choices.extend(classes[:n_members])
+
+        fd = pd.DataFrame.copy(df)
+        file_idxs = []
+        for c in class_choices:
+            file_idx = np.random.choice(fd[fd['CLASS'] == c].index)
+            fd.drop(index=file_idx,inplace=True)
+            file_idxs.append(file_idx)
+        np.random.shuffle(file_idxs)
+
+
 
     file_data = {}
     file_data['file_idxs'] = [int(i) for i in file_idxs]
