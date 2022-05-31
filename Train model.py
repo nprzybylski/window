@@ -42,11 +42,13 @@ classDict
 
 # In[5]:
 
-
-X = df.drop(columns=['class','path','CLASS'])
+drop = ['class','path','class']
+if 'startPoint' in df:
+    drop.append('startPoint')
+X = df.drop(columns=drop)
 y = df['class']
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2,
                                                     shuffle=True, random_state=45,
                                                     stratify=None)
 
@@ -90,7 +92,3 @@ val_files.to_csv(f'./utils/test_files_{train_width}.csv')
 
 
 # In[ ]:
-
-
-
-
