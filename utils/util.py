@@ -739,7 +739,7 @@ def sweep_window(config='./config/config.yaml',
         _window_width = p[1]
 
         if i % 1 == 0:
-            # clear_output(wait=True)
+            clear_output(wait=True)
             print(f'{i+1}/{n_iters} -- {round(100*((i+1)/(n_iters)),2)}%')
 
         _t = time.time()
