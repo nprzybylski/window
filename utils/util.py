@@ -538,12 +538,13 @@ def plot_window( df=None, n=2, back_colors=['r','b'],
 #             ax.scatter(np.arange(window_width,(l*n)+width_per_step,width_per_step),trues,
 #                        label='true class',facecolors='none',edgecolors=t_color,alpha=t_alpha)
 
+            # plot true values first, to get the line in the background
+            ax.plot(np.arange(window_width,(l*n),width_per_step),trues, label='true class',lw=2,color='black', alpha=p_alpha)
+        
             # plot predictions
             ax.scatter(np.arange(window_width,(l*n),width_per_step),preds,
                        label='predicted class',facecolors='none',edgecolors=p_color,alpha=p_alpha)
-            # plot true values
-            ax.scatter(np.arange(window_width,(l*n),width_per_step),trues,
-                       label='true class',facecolors='none',edgecolors=t_color,alpha=t_alpha)
+
             ax.set_yticks([*class_dict.values()])
             ax.set_yticklabels([*class_dict.keys()])
             ax.set_xticks(xticks)
@@ -787,12 +788,17 @@ def sweep_window(config='./config/config.yaml',
         if not isDir:
             os.mkdir(p)
         run = f'{_window_width}_{_width_per_step}'
-        fig_path = f'{path}/{run}/{fig_name[:-1]}.png'
-        fig.savefig(fig_path)
+        fig_path = f'{path}/{run}/{fig_name[:-1]}'
+        # save figure as PNG and PDF (vectorized)
+        fig.savefig(fig_path+'.png')
+        fig.savefig(fig_path+'.pdf')
+
         plt.close()
 
         fig1 = confusion_hist_plot(df=df,y_test=trues,preds=preds,codes=classDict)
+        # save confusion hist figure as PNG and PDF (vectorized)
         fig1.savefig(f'{fig_path} confusion.png')
+        fig1.savefig(f'{fig_path} confusion.pdf')
         plt.close()
 
         meta[run] = {}
