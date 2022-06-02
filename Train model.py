@@ -25,14 +25,13 @@ df = pd.read_csv(f'../data/complex_mafaulda_{train_width}.csv')
 df.head()
 
 
-# In[4]:
+# In[6]:
 
 
 # make our class dictionary
 keys = list(np.unique(df['class']))
 codes = [int(_) for _ in np.arange(0,len(keys))]
 classDict = dict(zip(keys,codes))
-classDict['mixed'] = 6
 
 df['CLASS'] = df['class']
 df['class'] = df['class'].map(classDict)
@@ -40,7 +39,7 @@ df['class'] = df['class'].map(classDict)
 classDict
 
 
-# In[5]:
+# In[7]:
 
 
 drop = ['class','path','CLASS']
@@ -57,7 +56,7 @@ print(f'Length of train set: {len(X_train)}')
 print(f'Length of test set: {len(X_test)}')
 
 
-# In[6]:
+# In[8]:
 
 
 # used by the confusion_hist_plot function
@@ -79,7 +78,7 @@ confusion_hist_plot(df=df,y_test=y_test,preds=preds,codes=classDict);
 joblib.dump(model, f'./models/rfc_{train_width}.joblib')
 
 
-# In[7]:
+# In[9]:
 
 
 # These indices tell us which files we will need to pull from to re-summarize subsamples of the data for

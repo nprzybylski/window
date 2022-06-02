@@ -13,13 +13,13 @@ sweep:
   - 1296
   - 1402
   - 144
-  n_files: 4
+  n_files: 6
   random_pick: True
   width_per_step:
     hi: 2500
     lo: 2500
     step: 500
   window_width:
-    hi: 50000
+    hi: 250000
     lo: 5000
     step: 1000

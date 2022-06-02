@@ -417,14 +417,16 @@ def summarize(df=None,columns=None):
     columns = columns
     data = df.copy()
     tempDf = pd.DataFrame()
-    classes = np.unique(data['class'])
+    # classes = np.unique(data['class'])
+    tempDf['class'] = [data['class'].iloc[-1]]
+
 #     print(classes)
 #     print(data.index)
 
-    if len(classes) > 1:
-        tempDf['class'] = ['mixed']
-    else:
-        tempDf['class'] = [classes[0]]
+    # if len(classes) > 1:
+    #     tempDf['class'] = ['mixed']
+    # else:
+    #     tempDf['class'] = [classes[0]]
 
     data = data.drop(columns=['class'])
 
@@ -549,7 +551,7 @@ def plot_window( df=None, n=2, back_colors=['r','b'],
             for _ in range(n):
                 ax.axvspan(l*_, (l*_)+l, facecolor=back_colors[_%2], alpha=0.13)
         ax.legend()
-    acc = accuracy_score(trues[trues!=6],pd.Series(preds)[trues!=6])
+    acc = accuracy_score(trues,pd.Series(preds))
     fig.suptitle(f'\n\n\n\n{window_width} wide window and {width_per_step} width per step\nAccuracy: {round(acc*100,2)}%')
 #     plt.show()
     return fig, acc
@@ -627,11 +629,6 @@ def slide_window( window_width=10000,width_per_step=10000,window_model=None,
         trues.append(y)
         classes.append(summarized['class'])
 
-    # unique_values = []
-    # unique_values.extend(preds)
-    # unique_values.extend(trues)
-    # unique_values = [*set(unique_values)]
-
     trues = pd.Series(trues)
     return trues, preds, classes
 
@@ -679,8 +676,7 @@ def sweep_window(config='./config/config.yaml',
     S = utils['signals']
     columns = utils['columns']
     classDict = utils['classes']
-    classes = [*classDict.keys()][:-1]
-
+    classes = [*classDict.keys()]
 
     default = conf['default']
     plot_path = default['plot_path']
@@ -735,7 +731,7 @@ def sweep_window(config='./config/config.yaml',
     meta = {}
 
     for i,p in enumerate(params):
-        
+
         df = prepare_window_data(sensors=S, file_idxs=file_idxs)
 
         _width_per_step = p[0]
@@ -750,8 +746,6 @@ def sweep_window(config='./config/config.yaml',
                                     num_files=n_files, width_per_step=_width_per_step,
                                     window_width=_window_width,classDict=classDict)
         _t = time.time() - _t
-
-        overall_acc = accuracy_score(trues,preds)
 
         ######################################################
 
@@ -801,7 +795,6 @@ def sweep_window(config='./config/config.yaml',
         plt.close()
 
         meta[run] = {}
-        meta[run]['overall_acc'] = overall_acc
         meta[run]['acc'] = acc
 
         meta[run]['time'] = _t
@@ -811,10 +804,7 @@ def sweep_window(config='./config/config.yaml',
         meta[run]['zones'] = {}
         meta[run]['zones'] = [ {} for _ in np.ones(n_files) ]
         for i in range(n_files):
-            meta[run]['zones'][i]['overall_acc'] = accuracy_score(t_zones[i],p_zones[i])
-            truth = [_ != 'mixed' for _ in c_zones[i]]
-            truth = [item for sublist in truth for item in sublist]
-            meta[run]['zones'][i]['acc'] = accuracy_score(pd.Series(t_zones[i])[truth],pd.Series(p_zones[i])[truth])
+            meta[run]['zones'][i]['acc'] = accuracy_score(t_zones[i],p_zones[i])
 
     file_paths = [*df['path'].unique()]
     meta[run]['file_paths'] = file_paths
@@ -850,7 +840,7 @@ def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window',config='confi
     S = utils['signals']
     columns = utils['columns']
     classDict = utils['classes']
-    classes = [*classDict.keys()][:-1]
+    classes = [*classDict.keys()]
 
     default = conf['default']
     plot_path = f'{wpath}/plots/' #default['plot_path']
@@ -956,8 +946,6 @@ def inner_sweep_window(i,p,model,config,util,wpath,path,fpath,n_iters,dpath):
                                 window_width=_window_width,classDict=classDict)
     _t = time.time() - _t
 
-    overall_acc = accuracy_score(trues,preds)
-
     t_zones = [ [] for _ in np.ones(n_files) ]
     p_zones = [ [] for _ in np.ones(n_files) ]
 
@@ -995,7 +983,6 @@ def inner_sweep_window(i,p,model,config,util,wpath,path,fpath,n_iters,dpath):
 
     meta = {}
     meta[run] = {}
-    meta[run]['overall_acc'] = overall_acc
     meta[run]['acc'] = acc
     meta[run]['time'] = _t
     meta[run]['zones'] = {}
