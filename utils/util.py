@@ -726,6 +726,7 @@ def sweep_window(config='./config/config.yaml',
     wps = np.arange(width_per_step['lo'],width_per_step['hi']+width_per_step['step'],width_per_step['step'])
     ww = np.arange(window_width['lo'],window_width['hi']+window_width['step'],window_width['step'])
     params = [*itertools.product(wps,ww)]
+    print(params)
     n_iters = len(params)
 
     meta = {}
@@ -738,7 +739,7 @@ def sweep_window(config='./config/config.yaml',
         _window_width = p[1]
 
         if i % 1 == 0:
-            clear_output(wait=True)
+            # clear_output(wait=True)
             print(f'{i+1}/{n_iters} -- {round(100*((i+1)/(n_iters)),2)}%')
 
         _t = time.time()
@@ -807,12 +808,12 @@ def sweep_window(config='./config/config.yaml',
             meta[run]['zones'][i]['acc'] = accuracy_score(t_zones[i],p_zones[i])
 
     file_paths = [*df['path'].unique()]
-    meta[run]['file_paths'] = file_paths
+    meta['file_paths'] = file_paths
 
         ######################################################
 
     t = time.time() - t
-    meta[run]['time'] = t
+    meta['time'] = t
     with open(f'{path}/out', 'w') as file:
         file.write(json.dumps(meta))
 
