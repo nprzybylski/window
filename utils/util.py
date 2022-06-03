@@ -823,7 +823,7 @@ def sweep_window(config='./config/config.yaml',
     with open(f'{path}/out', 'w') as file:
         file.write(json.dumps(meta))
 
-def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window',config='config/config.yaml',util='utils/utils1.json',model='models/rfc1.joblib',vpath='utils/test_files_1sec.csv',run=None):
+def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window',config='config/config.yaml',util='utils/utils.json',model='models/rfc1.joblib',vpath='utils/test_files_1sec.csv',run=None):
     t = time.time()
     with open(f'{wpath}/{config}','r') as stream:
         try:
