@@ -1,0 +1,27 @@
+---
+  default:
+    plot_path: './plots/'
+    experiment_name: 'a_test'
+
+  sweep:
+    random_pick: True
+    n_files: 6
+    file_idxs:
+      - 1396
+      - 502
+      - 1418
+      - 990
+        #- 1420
+        #- 1823
+        #- 1408
+        #- 1296
+        #- 1402
+        #- 144
+    width_per_step:
+      lo: 10000
+      hi: 10000
+      step: 500
+    window_width:
+      lo: 45000
+      hi: 55000
+      step: 5000
