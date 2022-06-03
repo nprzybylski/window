@@ -540,7 +540,7 @@ def plot_window( df=None, n=2, back_colors=['r','b'],
 
             # plot true values first, to get the line in the background
             ax.plot(np.arange(window_width,(l*n),width_per_step),trues, label='true class',lw=2,color='black', alpha=p_alpha)
-        
+
             # plot predictions
             ax.scatter(np.arange(window_width,(l*n),width_per_step),preds,
                        label='predicted class',facecolors='none',edgecolors=p_color,alpha=p_alpha)
@@ -628,10 +628,10 @@ def slide_window( window_width=10000,width_per_step=10000,window_model=None,
         pred = window_model.predict(X)[0]
         preds.append(pred)
         trues.append(y)
-        classes.append(summarized['class'])
+        # classes.append(summarized['class'])
 
     trues = pd.Series(trues)
-    return trues, preds, classes
+    return trues, preds #, classes
 
 def plot_feature_importance(model=None, X=None, figsize=None):
     feature_names = X.columns
@@ -744,7 +744,7 @@ def sweep_window(config='./config/config.yaml',
             print(f'{i+1}/{n_iters} -- {round(100*((i+1)/(n_iters)),2)}%')
 
         _t = time.time()
-        trues, preds, window_classes = slide_window(window_model=model, df=df, columns=columns,
+        trues, preds = slide_window(window_model=model, df=df, columns=columns,
                                     num_files=n_files, width_per_step=_width_per_step,
                                     window_width=_window_width,classDict=classDict)
         _t = time.time() - _t
