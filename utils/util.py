@@ -753,7 +753,6 @@ def sweep_window(config='./config/config.yaml',
 
         t_zones = [ [] for _ in np.ones(n_files) ]
         p_zones = [ [] for _ in np.ones(n_files) ]
-        c_zones = [ [] for _ in np.ones(n_files) ]
 
         zone_idxs = [ int((i*wps) // 250000) for i in range(len(trues)) ]
 
@@ -762,7 +761,6 @@ def sweep_window(config='./config/config.yaml',
 #             print(z)
             p_zones[z].append(preds[i])
             t_zones[z].append(trues[i])
-            c_zones[z].append(window_classes[i])
 
 #         print(t_zones)
 #         print(p_zones)
@@ -850,7 +848,7 @@ def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window',config='confi
     classes = [*classDict.keys()]
 
     default = conf['default']
-    plot_path = default['plot_path'] #f'{wpath}/plots/' 
+    plot_path = default['plot_path'] #f'{wpath}/plots/'
     experiment_name = default['experiment_name']
     if run is not None:
         experiment_name += f'_{run}'
