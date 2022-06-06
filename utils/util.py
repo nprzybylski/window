@@ -850,7 +850,7 @@ def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window',config='confi
     classes = [*classDict.keys()]
 
     default = conf['default']
-    plot_path = f'{wpath}/plots/' #default['plot_path']
+    plot_path = default['plot_path'] #f'{wpath}/plots/' 
     experiment_name = default['experiment_name']
     if run is not None:
         experiment_name += f'_{run}'
