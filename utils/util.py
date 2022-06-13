@@ -28,6 +28,7 @@ import json
 import time
 import joblib
 import itertools
+import sys
 
 # This function will probably be of most use to you. Provide the path to a data file and the state of the machine
 # captured in that data and return a nicely formatted DataFrame. For example, if you want the very first file of
@@ -690,7 +691,21 @@ def sweep_window(config='./config/config.yaml',
     sweep = conf['sweep']
     random_pick = sweep['random_pick']
     if not random_pick:
-        file_idxs = sweep['file_idxs']
+        if 'file_idxs' in sweep:
+            file_idxs = sweep['file_idxs']
+
+        elif 'file_paths' in sweep:
+            file_idxs = []
+            paths = sweep['file_paths']
+            for pth in paths:
+                file = df['path'][df['path'] == pth]
+                # print(file.index[0])
+                if len(file) > 0:
+                    file_idxs.append(file.index[0])
+                else:
+                    print(f'{pth} not found in test set')
+                    sys.exit()
+
         n_files = len(file_idxs)
     else:
         # n_files = sweep['n_files']
@@ -727,7 +742,7 @@ def sweep_window(config='./config/config.yaml',
     wps = np.arange(width_per_step['lo'],width_per_step['hi']+width_per_step['step'],width_per_step['step'])
     ww = np.arange(window_width['lo'],window_width['hi']+window_width['step'],window_width['step'])
     params = [*itertools.product(wps,ww)]
-    print(params)
+    # print(params)
     n_iters = len(params)
 
     meta = {}
@@ -740,7 +755,7 @@ def sweep_window(config='./config/config.yaml',
         _window_width = p[1]
 
         if i % 1 == 0:
-            # clear_output(wait=True)
+            clear_output(wait=True)
             print(f'{i+1}/{n_iters} -- {round(100*((i+1)/(n_iters)),2)}%')
 
         _t = time.time()
@@ -755,8 +770,8 @@ def sweep_window(config='./config/config.yaml',
         p_zones = [ [] for _ in np.ones(n_files) ]
 
         # zone_idxs = [ int((i*wps) // 250000) for i in range(len(trues)) ]
-        zone_idxs = [ int(((ww-1)+(i*wps)) // 250000) for i in range(len(trues)) ]
-        print(f'zone_idxs: {zone_idxs}')
+        zone_idxs = [ int(((_window_width-1)+(i*_width_per_step)) // 250000) for i in range(len(trues)) ]
+        # print(f'zone_idxs: {zone_idxs}')
 
 #         print(zone_idxs)
         for i,z in enumerate(zone_idxs):
@@ -811,8 +826,8 @@ def sweep_window(config='./config/config.yaml',
         meta[run]['zones'] = {}
         meta[run]['zones'] = [ {} for _ in np.ones(n_files) ]
         for i in range(n_files):
-            print(f'true: {t_zones[i]}')
-            print(f'predicted: {p_zones[i]}')
+            # print(f'true: {t_zones[i]}')
+            # print(f'predicted: {p_zones[i]}')
             meta[run]['zones'][i]['acc'] = accuracy_score(t_zones[i],p_zones[i])
 
     file_paths = [*df['path'].unique()]
@@ -864,7 +879,21 @@ def outer_sweep_window(wpath='/Users/nrprzybyl/ML/MAFAULDA/window',config='confi
     sweep = conf['sweep']
     random_pick = sweep['random_pick']
     if not random_pick:
-        file_idxs = sweep['file_idxs']
+        if 'file_idxs' in sweep:
+            file_idxs = sweep['file_idxs']
+
+        elif 'file_paths' in sweep:
+            file_idxs = []
+            paths = sweep['file_paths']
+            for pth in paths:
+                file = df['path'][df['path'] == pth]
+                # print(file.index[0])
+                if len(file) > 0:
+                    file_idxs.append(file.index[0])
+                else:
+                    print(f'{pth} not found in test set')
+                    sys.exit()
+
         n_files = len(file_idxs)
     else:
         n_files = sweep['n_files']

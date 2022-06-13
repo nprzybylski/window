@@ -4,19 +4,15 @@
     experiment_name: 'a_test'
 
   sweep:
-    random_pick: True
+    random_pick: False
     n_files: 6
-    file_idxs:
-      - 1396
-      - 502
-      - 1418
-      - 990
-        #- 1420
-        #- 1823
-        #- 1408
-        #- 1296
-        #- 1402
-        #- 144
+    file_paths:
+      - 'full/horizontal-misalignment/0.5mm/32.3584.csv'
+      - 'full/imbalance/20g/41.5744.csv'
+      - 'full/normal/29.4912.csv'
+      - 'full/overhang/ball_fault/0g/61.44.csv'
+      - 'full/underhang/ball_fault/0g/56.5248.csv'
+      - 'full/vertical-misalignment/0.63mm/18.8416.csv'
     width_per_step:
       lo: 10000
       hi: 10000
