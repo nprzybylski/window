@@ -740,7 +740,7 @@ def sweep_window(config='./config/config.yaml',
         _window_width = p[1]
 
         if i % 1 == 0:
-            clear_output(wait=True)
+            # clear_output(wait=True)
             print(f'{i+1}/{n_iters} -- {round(100*((i+1)/(n_iters)),2)}%')
 
         _t = time.time()
@@ -754,7 +754,9 @@ def sweep_window(config='./config/config.yaml',
         t_zones = [ [] for _ in np.ones(n_files) ]
         p_zones = [ [] for _ in np.ones(n_files) ]
 
-        zone_idxs = [ int((i*wps) // 250000) for i in range(len(trues)) ]
+        # zone_idxs = [ int((i*wps) // 250000) for i in range(len(trues)) ]
+        zone_idxs = [ int(((ww-1)+(i*wps)) // 250000) for i in range(len(trues)) ]
+        print(f'zone_idxs: {zone_idxs}')
 
 #         print(zone_idxs)
         for i,z in enumerate(zone_idxs):
@@ -809,6 +811,8 @@ def sweep_window(config='./config/config.yaml',
         meta[run]['zones'] = {}
         meta[run]['zones'] = [ {} for _ in np.ones(n_files) ]
         for i in range(n_files):
+            print(f'true: {t_zones[i]}')
+            print(f'predicted: {p_zones[i]}')
             meta[run]['zones'][i]['acc'] = accuracy_score(t_zones[i],p_zones[i])
 
     file_paths = [*df['path'].unique()]
@@ -954,7 +958,8 @@ def inner_sweep_window(i,p,model,config,util,wpath,path,fpath,n_iters,dpath):
     t_zones = [ [] for _ in np.ones(n_files) ]
     p_zones = [ [] for _ in np.ones(n_files) ]
 
-    zone_idxs = [ int((i*_width_per_step) // 250000) for i in range(len(trues)) ]
+    # zone_idxs = [ int((i*_width_per_step) // 250000) for i in range(len(trues)) ]
+    zone_idxs = [ int(((_window_width-1)+(i*_width_per_step)) // 250000) for i in range(len(trues)) ]
 
     for i,z in enumerate(zone_idxs):
         p_zones[z].append(preds[i])
