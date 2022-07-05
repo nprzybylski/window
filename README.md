@@ -15,7 +15,7 @@ How to set up python virtual environment:
 $ python3 -m venv window-env
 $ source window-env/bin/activate
 $ python3 -m pip install --upgrade pip
-$ python3 -m pip install pandas scipy numpy matplotlib seaborn scikit-learn yaml
+$ python3 -m pip install pandas scipy numpy matplotlib seaborn scikit-learn pyyaml
 
 
 Making a config file:
